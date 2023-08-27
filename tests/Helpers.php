@@ -8,11 +8,11 @@ class Helpers
 {
     public static function craftWhereQuery(array|string $columns, array|string $operators, array|string $values, bool $unwrapValue = false): string
     {
-        if(is_string($columns) && is_string($operators) && is_string($values)) {
+        if (is_string($columns) && is_string($operators) && is_string($values)) {
             $values = Operator::parseOperatorValue($operators, $values);
             $operators = Operator::getQueryOperator($operators);
 
-            if(!$unwrapValue) {
+            if (! $unwrapValue) {
                 $values = "'$values'";
             }
 
@@ -24,7 +24,7 @@ class Helpers
             $operator = Operator::getQueryOperator($operators[$key]);
             $value = Operator::parseOperatorValue($operators[$key], $values[$key]);
 
-            if(!$unwrapValue) {
+            if (! $unwrapValue) {
                 $value = "'$value'";
             }
 
@@ -45,8 +45,8 @@ class Helpers
                 'filters' => [[
                     'field' => $filters,
                     'operator' => $operators,
-                    'value' => $values
-                ]]
+                    'value' => $values,
+                ]],
             ]);
 
             return;
@@ -57,12 +57,12 @@ class Helpers
             $allFilters[] = [
                 'field' => $filter,
                 'operator' => $operators[$key],
-                'value' => $values[$key]
+                'value' => $values[$key],
             ];
         }
 
         request()->merge([
-            'filters' => $allFilters
+            'filters' => $allFilters,
         ]);
     }
 }

@@ -4,7 +4,6 @@ namespace Albet\LaravelFilterable;
 
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
-use Albet\LaravelFilterable\Commands\LaravelFilterableCommand;
 
 class LaravelFilterableServiceProvider extends PackageServiceProvider
 {

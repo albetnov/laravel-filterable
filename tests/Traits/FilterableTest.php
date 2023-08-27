@@ -2,29 +2,28 @@
 
 use Albet\LaravelFilterable\Tests\Helpers;
 use Albet\LaravelFilterable\Tests\Stubs\Blank;
-use Albet\LaravelFilterable\Tests\Stubs\Tickets;
 use Albet\LaravelFilterable\Tests\Stubs\Flight;
-use PHPUnit\TextUI\Help;
+use Albet\LaravelFilterable\Tests\Stubs\Tickets;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
-it("return correct eq and neq", function () {
-    $fields = array_fill(0, 2, "ticket_no");
-    $operators = ["eq", "neq"];
-    $values = array_fill(0, 2, "abc");
+it('return correct eq and neq', function () {
+    $fields = array_fill(0, 2, 'ticket_no');
+    $operators = ['eq', 'neq'];
+    $values = array_fill(0, 2, 'abc');
 
     Helpers::fakeFilter($fields, $operators, $values);
 
     expect(Tickets::filter()->toRawSql())->toContain(Helpers::craftWhereQuery($fields, $operators, $values));
 
-    $fields = array_fill(0, 2, "ticket_id");
-    $values = array_fill(0,2,5);
+    $fields = array_fill(0, 2, 'ticket_id');
+    $values = array_fill(0, 2, 5);
 
     Helpers::fakeFilter($fields, $operators, $values);
 
     expect(Tickets::filter()->toRawSql())->toContain(Helpers::craftWhereQuery($fields, $operators, $values, true));
 
-    $fields = array_fill(0, 2, "booked_at");
-    $values = array_fill(0,2,"8/20/2023");
+    $fields = array_fill(0, 2, 'booked_at');
+    $values = array_fill(0, 2, '8/20/2023');
 
     Helpers::fakeFilter($fields, $operators, $values);
 
@@ -33,8 +32,8 @@ it("return correct eq and neq", function () {
     sql));
 });
 
-it("can load getRows as alternative of rows property", function () {
-    $fields = "flight_no";
+it('can load getRows as alternative of rows property', function () {
+    $fields = 'flight_no';
     $operators = 'eq';
     $values = 10;
 
@@ -43,11 +42,11 @@ it("can load getRows as alternative of rows property", function () {
     expect(Flight::filter()->toRawSql())->toContain(Helpers::craftWhereQuery($fields, $operators, $values, true));
 });
 
-it("throw an exception when no rows attribute is passed", function () {
+it('throw an exception when no rows attribute is passed', function () {
     Blank::filter();
 })->throws(\InvalidArgumentException::class, 'getRows() or $rows is not exist');
 
-it("return correct starts_with query", function () {
+it('return correct starts_with query', function () {
     $field = 'ticket_no';
     $operator = 'starts_with';
     $value = 'abc';
@@ -56,7 +55,7 @@ it("return correct starts_with query", function () {
     expect(Tickets::filter()->toRawSql())->toContain(Helpers::craftWhereQuery($field, $operator, $value));
 });
 
-it("return correct ends_with query", function () {
+it('return correct ends_with query', function () {
     $field = 'ticket_no';
     $operator = 'ends_with';
     $value = 'abc';
@@ -64,7 +63,7 @@ it("return correct ends_with query", function () {
     expect(Tickets::filter()->toRawSql())->toContain(Helpers::craftWhereQuery($field, $operator, $value));
 });
 
-it("supports all types of text operator", function () {
+it('supports all types of text operator', function () {
     $operators = ['neq', 'contains', 'not_contains', 'not_contains'];
     $fields = array_fill(0, count($operators), 'ticket_no'); // match operators
     $values = array_fill(0, count($operators), 'test');
@@ -77,7 +76,7 @@ it("supports all types of text operator", function () {
     expect(Tickets::filter()->toRawSql())->toContain(Helpers::craftWhereQuery($fields, $operators, $values));
 });
 
-it("return correct in query", function () {
+it('return correct in query', function () {
     Helpers::fakeFilter('ticket_no', 'in', 'multi,value');
 
     expect(Tickets::filter()->toRawSql())->toContain('where', "in ('multi', 'value')");
@@ -89,7 +88,7 @@ it("return correct in query", function () {
     sql));
 });
 
-it("return correct not_in query", function () {
+it('return correct not_in query', function () {
     Helpers::fakeFilter('ticket_no', 'not_in', 'multi,value');
 
     expect(Tickets::filter()->toRawSql())->toContain('where', "not in ('multi', 'value')");
@@ -101,53 +100,53 @@ it("return correct not_in query", function () {
     sql));
 });
 
-it("generate where and query using have_all", function () {
-    Helpers::fakeFilter("ticket_no", "have_all", "multi,value");
+it('generate where and query using have_all', function () {
+    Helpers::fakeFilter('ticket_no', 'have_all', 'multi,value');
 
     expect(Tickets::filter()->toRawSql())->toContain(Helpers::craftWhereQuery(
-        array_fill(0, 2, "ticket_no"),
-        array_fill(0, 2, "eq"),
+        array_fill(0, 2, 'ticket_no'),
+        array_fill(0, 2, 'eq'),
         ['multi', 'value']
     ));
 });
 
-it("generate gt, lt, gte, lte queries", function () {
+it('generate gt, lt, gte, lte queries', function () {
     $operators = ['lt', 'gt', 'lte', 'gte'];
-    $fields = array_fill(0, count($operators), "ticket_id");
+    $fields = array_fill(0, count($operators), 'ticket_id');
     $values = array_fill(0, count($operators), 10);
     Helpers::fakeFilter($fields, $operators, $values);
 
     expect(Tickets::filter()->toRawSql())->toContain(Helpers::craftWhereQuery($fields, $operators, $values, true));
 
-    $fields = array_fill(0, count($operators), "booked_at");
-    $values = array_fill(0, count($operators), "8/20/2023");
+    $fields = array_fill(0, count($operators), 'booked_at');
+    $values = array_fill(0, count($operators), '8/20/2023');
     Helpers::fakeFilter($fields, $operators, $values);
 
     expect(Tickets::filter()->toRawSql())->toContain('<', '>', '>=', '<=', '2023-08-20');
 });
 
-it("throws http exception for invalid text operator", function () {
+it('throws http exception for invalid text operator', function () {
     Helpers::fakeFilter('ticket_no', 'gt', 'abc');
     Tickets::filter();
-})->throws(HttpException::class, "Invalid operator for text type");
+})->throws(HttpException::class, 'Invalid operator for text type');
 
 it("string without commas won't throw error (in, not_in, have_all)", function () {
     Helpers::fakeFilter(
         array_fill(0, 2, 'ticket_no'),
         ['in', 'not_in', 'have_all'],
-        array_fill(0,2, 'test')
+        array_fill(0, 2, 'test')
     );
 
     Tickets::filter();
 })->throwsNoExceptions();
 
-it("throws http exception for invalid number operator", function () {
+it('throws http exception for invalid number operator', function () {
     Helpers::fakeFilter('ticket_id', 'starts_with', 'abc');
 
     Tickets::filter();
-})->throws(HttpException::class, "Invalid operator for number type");
+})->throws(HttpException::class, 'Invalid operator for number type');
 
-it("throws http exception for invalid date operator", function () {
+it('throws http exception for invalid date operator', function () {
     Helpers::fakeFilter('booked_at', 'ends_with', 'abc');
 
     Tickets::filter();

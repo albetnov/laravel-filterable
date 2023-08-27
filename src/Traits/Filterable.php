@@ -24,7 +24,8 @@ trait Filterable
         throw new \InvalidArgumentException('getRows() or $rows is not exist');
     }
 
-    private function constructWhere(Builder $builder, string $column, array $values): Builder {
+    private function constructWhere(Builder $builder, string $column, array $values): Builder
+    {
         foreach ($values as $value) {
             $builder->where($column, $value);
         }
@@ -34,7 +35,7 @@ trait Filterable
 
     private function handleText(Builder $builder, string $column, string $operator, string $text): Builder
     {
-        if (!Operator::isTextOperator($operator)) {
+        if (! Operator::isTextOperator($operator)) {
             abort(400, 'Invalid operator for text type.');
         }
 
@@ -42,16 +43,16 @@ trait Filterable
         $fieldValue = Operator::parseOperatorValue($operator, $text);
 
         return match ($operator) {
-            "in" => $builder->whereIn($column, $fieldValue),
-            "not_in" => $builder->whereNotIn($column, $fieldValue),
-            "have_all" => $this->constructWhere($builder, $column, $fieldValue),
+            'in' => $builder->whereIn($column, $fieldValue),
+            'not_in' => $builder->whereNotIn($column, $fieldValue),
+            'have_all' => $this->constructWhere($builder, $column, $fieldValue),
             default => $builder->where($column, $queryOperator, $fieldValue)
         };
     }
 
     private function handleNumber(Builder $builder, string $column, string $operator, string $number): Builder
     {
-        if (!Operator::isNumberOperator($operator)) {
+        if (! Operator::isNumberOperator($operator)) {
             abort(400, 'Invalid operator for number type.');
         }
 
@@ -63,7 +64,7 @@ trait Filterable
 
     private function handleDate(Builder $builder, string $column, string $operator, string $date): Builder
     {
-        if (!Operator::isDateOperator($operator)) {
+        if (! Operator::isDateOperator($operator)) {
             abort(400, 'Invalid operator for date type.');
         }
 
@@ -71,7 +72,7 @@ trait Filterable
         $fieldValue = Operator::parseOperatorValue($operator, $date);
 
         if (is_array($fieldValue) && count($fieldValue) === 2) {
-            $fieldValue = collect($fieldValue)->map(fn(string $item) => Carbon::createFromFormat('n/j/Y', $item))
+            $fieldValue = collect($fieldValue)->map(fn (string $item) => Carbon::createFromFormat('n/j/Y', $item))
                 ->toArray();
 
             if ($operator === 'in') {
@@ -106,9 +107,8 @@ trait Filterable
         $request->validate([
             'filters.*.field' => ['required', 'string', Rule::in(collect($this->getFilterable())->keys()->toArray())],
             'filters.*.operator' => ['required', Rule::in(Operator::getAllOperators())],
-            'filters.*.value' => 'required'
+            'filters.*.value' => 'required',
         ]);
-
 
         foreach ($request->get('filters') as $filter) {
             $this->filterBy($query, $filter['field'], $filter['operator'], $filter['value']);

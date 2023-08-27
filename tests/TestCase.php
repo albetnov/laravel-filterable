@@ -2,9 +2,9 @@
 
 namespace Albet\LaravelFilterable\Tests;
 
+use Albet\LaravelFilterable\LaravelFilterableServiceProvider;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Orchestra\Testbench\TestCase as Orchestra;
-use Albet\LaravelFilterable\LaravelFilterableServiceProvider;
 
 class TestCase extends Orchestra
 {

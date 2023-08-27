@@ -17,6 +17,6 @@ class Tickets extends Model
     protected array $rows = [
         'ticket_id' => FilterableType::NUMBER,
         'ticket_no' => FilterableType::TEXT,
-        'booked_at' => FilterableType::DATE
+        'booked_at' => FilterableType::DATE,
     ];
 }

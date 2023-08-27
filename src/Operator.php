@@ -33,7 +33,7 @@ class Operator
         };
     }
 
-    public static function parseOperatorValue(string $operator, string $value): string | array
+    public static function parseOperatorValue(string $operator, string $value): string|array
     {
         return match ($operator) {
             'contains', 'not_contains' => "%$value%",

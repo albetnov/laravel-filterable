@@ -14,10 +14,11 @@ class Flight extends Model
 {
     use Filterable;
 
-    protected function getRows(): array {
+    protected function getRows(): array
+    {
         return [
             'flight_no' => FilterableType::NUMBER,
-            'flight_type' => FilterableType::TEXT
+            'flight_type' => FilterableType::TEXT,
         ];
     }
 }
