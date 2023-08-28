@@ -7,4 +7,5 @@ enum FilterableType
     case TEXT;
     case NUMBER;
     case DATE;
+    case BOOLEAN;
 }

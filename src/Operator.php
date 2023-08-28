@@ -58,4 +58,9 @@ class Operator
     {
         return in_array($selectedOperator, ['eq', 'neq', 'gt', 'lt', 'gte', 'lte', 'in', 'not_in']);
     }
+
+    public static function isBooleanOperator(string $selectedOperator): bool
+    {
+        return in_array($selectedOperator, ['eq', 'neq']);
+    }
 }

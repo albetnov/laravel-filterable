@@ -75,3 +75,17 @@ it('can validate date operator', function () {
         expect(Operator::isDateOperator($notValidList))->toBeFalse();
     }
 });
+
+it("van validate boolean operator", function () {
+    $lists = ['eq', 'neq'];
+
+    foreach ($lists as $list) {
+        expect(Operator::isBooleanOperator($list))->toBeTrue();
+    }
+
+    $notValidLists = Operator::except($lists);
+
+    foreach ($notValidLists as $notValidList) {
+        expect(Operator::isBooleanOperator($notValidList))->toBeFalse();
+    }
+});

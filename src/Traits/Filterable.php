@@ -89,6 +89,20 @@ trait Filterable
         return $builder->whereDate($column, $queryOperator, $fieldValue);
     }
 
+    private function handleBoolean(Builder $builder, string $column, string $operator, string $bool): Builder {
+        if(!Operator::isBooleanOperator($operator)) {
+            abort(400, "Invalid operator for boolean type");
+        }
+
+        if(!in_array($bool, ["0", "1"])) {
+            abort(400, "Invalid value for boolean filter");
+        }
+
+        $operator = Operator::getQueryOperator($operator);
+
+        return $builder->where($column, $operator, (bool) $bool);
+    }
+
     private function filterBy(Builder $builder, string $column, string $operator, string $value): Builder
     {
         $type = $this->getFilterable()[$column];
@@ -97,6 +111,7 @@ trait Filterable
             FilterableType::TEXT => $this->handleText($builder, $column, $operator, $value),
             FilterableType::NUMBER => $this->handleNumber($builder, $column, $operator, $value),
             FilterableType::DATE => $this->handleDate($builder, $column, $operator, $value),
+            FilterableType::BOOLEAN => $this->handleBoolean($builder, $column, $operator, $value),
         };
     }
 
@@ -110,7 +125,7 @@ trait Filterable
             'filters.*.value' => 'required',
         ]);
 
-        foreach ($request->get('filters') as $filter) {
+        foreach ($request->get('filters', []) as $filter) {
             $this->filterBy($query, $filter['field'], $filter['operator'], $filter['value']);
         }
 

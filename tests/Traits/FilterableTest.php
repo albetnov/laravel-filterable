@@ -30,6 +30,15 @@ it('return correct eq and neq', function () {
     expect(Tickets::filter()->toRawSql())->toEqual(trim(<<<'sql'
         select * from "tickets" where strftime('%Y-%m-%d', "booked_at") = cast('2023-08-20' as text) and strftime('%Y-%m-%d', "booked_at") != cast('2023-08-20' as text)
     sql));
+
+    $fields = array_fill(0, 2, "is_sold");
+    $values = ["0", "1"];
+
+    Helpers::fakeFilter($fields, $operators, $values);
+
+    expect(Tickets::filter()->toRawSql())->toEqual(trim(<<<'sql'
+        select * from "tickets" where "is_sold" = 0 and "is_sold" != 1
+    sql));
 });
 
 it('can load getRows as alternative of rows property', function () {
@@ -151,3 +160,19 @@ it('throws http exception for invalid date operator', function () {
 
     Tickets::filter();
 })->throws(HttpException::class, 'Invalid operator for date type');
+
+it("can still query model even though no filter being used", function () {
+    Tickets::filter()->toRawSql();
+})->throwsNoExceptions();
+
+it("throw http exception for invalid boolean operator", function () {
+    Helpers::fakeFilter('is_sold', 'gt', '0');
+
+    Tickets::filter();
+})->throws(HttpException::class, 'Invalid operator for boolean type');
+
+it("throws http exception for invalid boolean values", function () {
+    Helpers::fakeFilter('is_sold', 'eq', 'notvalid');
+
+    Tickets::filter();
+})->throws(HttpException::class, "Invalid value for boolean filter");
