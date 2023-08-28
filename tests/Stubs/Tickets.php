@@ -18,6 +18,6 @@ class Tickets extends Model
         'ticket_id' => FilterableType::NUMBER,
         'ticket_no' => FilterableType::TEXT,
         'booked_at' => FilterableType::DATE,
-        'is_sold' => FilterableType::BOOLEAN
+        'is_sold' => FilterableType::BOOLEAN,
     ];
 }

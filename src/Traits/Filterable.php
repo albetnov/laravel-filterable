@@ -89,13 +89,14 @@ trait Filterable
         return $builder->whereDate($column, $queryOperator, $fieldValue);
     }
 
-    private function handleBoolean(Builder $builder, string $column, string $operator, string $bool): Builder {
-        if(!Operator::isBooleanOperator($operator)) {
-            abort(400, "Invalid operator for boolean type");
+    private function handleBoolean(Builder $builder, string $column, string $operator, string $bool): Builder
+    {
+        if (! Operator::isBooleanOperator($operator)) {
+            abort(400, 'Invalid operator for boolean type');
         }
 
-        if(!in_array($bool, ["0", "1"])) {
-            abort(400, "Invalid value for boolean filter");
+        if (! in_array($bool, ['0', '1'])) {
+            abort(400, 'Invalid value for boolean filter');
         }
 
         $operator = Operator::getQueryOperator($operator);
