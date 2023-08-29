@@ -1,5 +1,6 @@
 <?php
 
+use Albet\LaravelFilterable\Exceptions\PropertyNotExist;
 use Albet\LaravelFilterable\Tests\Helpers;
 use Albet\LaravelFilterable\Tests\Stubs\Blank;
 use Albet\LaravelFilterable\Tests\Stubs\Flight;
@@ -53,7 +54,7 @@ it('can load getRows as alternative of rows property', function () {
 
 it('throw an exception when no rows attribute is passed', function () {
     Blank::filter();
-})->throws(\InvalidArgumentException::class, 'getRows() or $rows is not exist');
+})->throws(PropertyNotExist::class);
 
 it('return correct starts_with query', function () {
     $field = 'ticket_no';
