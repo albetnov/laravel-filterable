@@ -22,7 +22,7 @@ class Filter
 
     private function handleText(string $column, string $operator, string $text): void
     {
-        if (!Operator::isTextOperator($operator)) {
+        if (! Operator::isTextOperator($operator)) {
             abort(400, 'Invalid operator for text type.');
         }
 
@@ -39,19 +39,19 @@ class Filter
 
     private function handleNumber(string $column, string $operator, string $number): void
     {
-        if (!Operator::isNumberOperator($operator)) {
+        if (! Operator::isNumberOperator($operator)) {
             abort(400, 'Invalid operator for number type.');
         }
 
         $operator = Operator::getQueryOperator($operator);
-        $fieldValue = Str::contains($number, '.') ? (float)$number : (int)$number;
+        $fieldValue = Str::contains($number, '.') ? (float) $number : (int) $number;
 
         $this->builder->where($column, $operator, $fieldValue);
     }
 
     private function handleDate(string $column, string $operator, string $date): void
     {
-        if (!Operator::isDateOperator($operator)) {
+        if (! Operator::isDateOperator($operator)) {
             abort(400, 'Invalid operator for date type.');
         }
 
@@ -59,16 +59,18 @@ class Filter
         $fieldValue = Operator::parseOperatorValue($operator, $date);
 
         if (is_array($fieldValue) && count($fieldValue) === 2) {
-            $fieldValue = collect($fieldValue)->map(fn(string $item) => Carbon::createFromFormat('n/j/Y', $item))
+            $fieldValue = collect($fieldValue)->map(fn (string $item) => Carbon::createFromFormat('n/j/Y', $item))
                 ->toArray();
 
             if ($operator === 'in') {
                 $this->builder->whereDate($column, '>=', $fieldValue[0])->whereDate($column, '<=', $fieldValue[1]);
+
                 return;
             }
 
             if ($operator === 'not_in') {
                 $this->builder->whereDate($column, '<', $fieldValue[0])->orWhereDate($column, '>', $fieldValue[1]);
+
                 return;
             }
         }
@@ -80,22 +82,24 @@ class Filter
 
     private function handleBoolean(string $column, string $operator, string $bool): void
     {
-        if (!Operator::isBooleanOperator($operator)) {
-            abort(400, "Invalid operator for boolean type");
+        if (! Operator::isBooleanOperator($operator)) {
+            abort(400, 'Invalid operator for boolean type');
         }
 
-        if (!in_array($bool, ["0", "1"])) {
-            abort(400, "Invalid value for boolean filter");
+        if (! in_array($bool, ['0', '1'])) {
+            abort(400, 'Invalid value for boolean filter');
         }
 
         $operator = Operator::getQueryOperator($operator);
 
-        $this->builder->where($column, $operator, (bool)$bool);
+        $this->builder->where($column, $operator, (bool) $bool);
     }
 
     public function filter(): Builder
     {
-        if (!$this->filters || !$this->rows) return $this->builder;
+        if (! $this->filters || ! $this->rows) {
+            return $this->builder;
+        }
 
         foreach ($this->filters as $filter) {
             /** @var FilterableType $type */
