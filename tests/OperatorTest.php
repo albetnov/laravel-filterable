@@ -76,7 +76,7 @@ it('can validate date operator', function () {
     }
 });
 
-it("van validate boolean operator", function () {
+it('van validate boolean operator', function () {
     $lists = ['eq', 'neq'];
 
     foreach ($lists as $list) {
