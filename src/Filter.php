@@ -15,10 +15,9 @@ class Filter
 
     public function __construct(
         private readonly Builder $builder,
-        private readonly ?array  $filters,
-        private readonly ?array  $rows
-    )
-    {
+        private readonly ?array $filters,
+        private readonly ?array $rows
+    ) {
     }
 
     private function constructWhere(array $values, string $column): void
@@ -33,7 +32,7 @@ class Filter
      */
     private function matchCustomOperators(string $operator): void
     {
-        if ($this->customOperators && !in_array($operator, $this->customOperators)) {
+        if ($this->customOperators && ! in_array($operator, $this->customOperators)) {
             throw new OperatorNotExist($operator);
         }
     }
@@ -54,7 +53,7 @@ class Filter
     private function handleNumber(string $column, string $operator, string $number): void
     {
         $operator = Operator::getQueryOperator($operator);
-        $fieldValue = Str::contains($number, '.') ? (float)$number : (int)$number;
+        $fieldValue = Str::contains($number, '.') ? (float) $number : (int) $number;
 
         $this->builder->where($column, $operator, $fieldValue);
     }
@@ -64,7 +63,7 @@ class Filter
         $fieldValue = Operator::parseOperatorValue($operator, $date);
 
         if (is_array($fieldValue) && count($fieldValue) === 2) {
-            $fieldValue = collect($fieldValue)->map(fn(string $item) => Carbon::createFromFormat('n/j/Y', $item))
+            $fieldValue = collect($fieldValue)->map(fn (string $item) => Carbon::createFromFormat('n/j/Y', $item))
                 ->toArray();
 
             if ($operator === 'in') {
@@ -89,13 +88,13 @@ class Filter
 
     private function handleBoolean(string $column, string $operator, string $bool): void
     {
-        if (!in_array($bool, ['0', '1'])) {
+        if (! in_array($bool, ['0', '1'])) {
             abort(400, 'Invalid value for boolean filter');
         }
 
         $operator = Operator::getQueryOperator($operator);
 
-        $this->builder->where($column, $operator, (bool)$bool);
+        $this->builder->where($column, $operator, (bool) $bool);
     }
 
     /**
@@ -104,7 +103,7 @@ class Filter
      */
     public function filter(): Builder
     {
-        if (!$this->filters || !$this->rows) {
+        if (! $this->filters || ! $this->rows) {
             return $this->builder;
         }
 
@@ -117,7 +116,7 @@ class Filter
                 $type = $type->filterableType;
             }
 
-            if (!Operator::is($type, $filter['operator'])) {
+            if (! Operator::is($type, $filter['operator'])) {
                 throw new OperatorNotValid($filter['operator'], $type->name);
             }
 
