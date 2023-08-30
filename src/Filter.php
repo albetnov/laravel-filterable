@@ -3,13 +3,21 @@
 namespace Albet\LaravelFilterable;
 
 use Albet\LaravelFilterable\Enums\FilterableType;
+use Albet\LaravelFilterable\Exceptions\OperatorNotExist;
+use Albet\LaravelFilterable\Exceptions\OperatorNotValid;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
 
 class Filter
 {
-    public function __construct(private Builder $builder, private ?array $filters, private ?array $rows)
+    private ?array $customOperators = null;
+
+    public function __construct(
+        private readonly Builder $builder,
+        private readonly ?array  $filters,
+        private readonly ?array  $rows
+    )
     {
     }
 
@@ -20,12 +28,18 @@ class Filter
         }
     }
 
+    /**
+     * @throws OperatorNotExist
+     */
+    private function matchCustomOperators(string $operator): void
+    {
+        if ($this->customOperators && !in_array($operator, $this->customOperators)) {
+            throw new OperatorNotExist($operator);
+        }
+    }
+
     private function handleText(string $column, string $operator, string $text): void
     {
-        if (! Operator::isTextOperator($operator)) {
-            abort(400, 'Invalid operator for text type.');
-        }
-
         $queryOperator = Operator::getQueryOperator($operator);
         $fieldValue = Operator::parseOperatorValue($operator, $text);
 
@@ -39,27 +53,18 @@ class Filter
 
     private function handleNumber(string $column, string $operator, string $number): void
     {
-        if (! Operator::isNumberOperator($operator)) {
-            abort(400, 'Invalid operator for number type.');
-        }
-
         $operator = Operator::getQueryOperator($operator);
-        $fieldValue = Str::contains($number, '.') ? (float) $number : (int) $number;
+        $fieldValue = Str::contains($number, '.') ? (float)$number : (int)$number;
 
         $this->builder->where($column, $operator, $fieldValue);
     }
 
     private function handleDate(string $column, string $operator, string $date): void
     {
-        if (! Operator::isDateOperator($operator)) {
-            abort(400, 'Invalid operator for date type.');
-        }
-
-        $queryOperator = Operator::getQueryOperator($operator);
         $fieldValue = Operator::parseOperatorValue($operator, $date);
 
         if (is_array($fieldValue) && count($fieldValue) === 2) {
-            $fieldValue = collect($fieldValue)->map(fn (string $item) => Carbon::createFromFormat('n/j/Y', $item))
+            $fieldValue = collect($fieldValue)->map(fn(string $item) => Carbon::createFromFormat('n/j/Y', $item))
                 ->toArray();
 
             if ($operator === 'in') {
@@ -75,6 +80,8 @@ class Filter
             }
         }
 
+        $queryOperator = Operator::getQueryOperator($operator);
+
         $fieldValue = Carbon::createFromFormat('n/j/Y', $date);
 
         $this->builder->whereDate($column, $queryOperator, $fieldValue);
@@ -82,28 +89,39 @@ class Filter
 
     private function handleBoolean(string $column, string $operator, string $bool): void
     {
-        if (! Operator::isBooleanOperator($operator)) {
-            abort(400, 'Invalid operator for boolean type');
-        }
-
-        if (! in_array($bool, ['0', '1'])) {
+        if (!in_array($bool, ['0', '1'])) {
             abort(400, 'Invalid value for boolean filter');
         }
 
         $operator = Operator::getQueryOperator($operator);
 
-        $this->builder->where($column, $operator, (bool) $bool);
+        $this->builder->where($column, $operator, (bool)$bool);
     }
 
+    /**
+     * @throws OperatorNotValid
+     * @throws OperatorNotExist
+     */
     public function filter(): Builder
     {
-        if (! $this->filters || ! $this->rows) {
+        if (!$this->filters || !$this->rows) {
             return $this->builder;
         }
 
         foreach ($this->filters as $filter) {
-            /** @var FilterableType $type */
+            /** @var FilterableType|TypeFactory $type */
             $type = $this->rows[$filter['field']];
+
+            if ($type instanceof TypeFactory) {
+                $this->customOperators = $type->getOperators();
+                $type = $type->filterableType;
+            }
+
+            if (!Operator::is($type, $filter['operator'])) {
+                throw new OperatorNotValid($filter['operator'], $type->name);
+            }
+
+            $this->matchCustomOperators($filter['operator']);
 
             match ($type) {
                 FilterableType::TEXT => $this->handleText($filter['field'], $filter['operator'], $filter['value']),

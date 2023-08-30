@@ -19,6 +19,7 @@ class Flight extends Model
         return [
             'flight_no' => FilterableType::NUMBER,
             'flight_type' => FilterableType::TEXT,
+            'flight_name' => FilterableType::TEXT->limit(['eq', 'neq']),
         ];
     }
 }

@@ -2,13 +2,11 @@
 
 namespace Albet\LaravelFilterable\Traits;
 
+use Albet\LaravelFilterable\Enums\Operators;
 use Albet\LaravelFilterable\Exceptions\PropertyNotExist;
 use Albet\LaravelFilterable\Filter;
-use Albet\LaravelFilterable\Operator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Validation\Rule;
-use Psr\Container\ContainerExceptionInterface;
-use Psr\Container\NotFoundExceptionInterface;
 
 trait Filterable
 {
@@ -28,18 +26,13 @@ trait Filterable
         throw new PropertyNotExist();
     }
 
-    /**
-     * @throws ContainerExceptionInterface
-     * @throws NotFoundExceptionInterface
-     * @throws PropertyNotExist
-     */
     public function scopeFilter(Builder $query): Builder
     {
         $request = request();
 
         $request->validate([
             'filters.*.field' => ['required', 'string', Rule::in(collect($this->getFilterable())->keys()->toArray())],
-            'filters.*.operator' => ['required', Rule::in(Operator::getAllOperators())],
+            'filters.*.operator' => ['required', Rule::in(Operators::toCollection()->toArray())],
             'filters.*.value' => 'required',
         ]);
 

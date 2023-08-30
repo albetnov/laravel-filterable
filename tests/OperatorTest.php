@@ -2,11 +2,6 @@
 
 use Albet\LaravelFilterable\Operator;
 
-it('Get all operatores return supported operators', function () {
-    expect(Operator::getAllOperators())->toBeArray()
-        ->toContain('eq', 'neq', 'contains', 'starts_with', 'ends_with', 'not_contains', 'in', 'not_in', 'have_all', 'gt', 'lt', 'gte', 'lte');
-});
-
 it('Except works accordingly', function () {
     expect(Operator::except(['eq']))->not->toHaveKey('eq');
 });
