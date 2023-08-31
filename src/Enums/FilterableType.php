@@ -13,28 +13,27 @@ enum FilterableType
     case BOOLEAN;
 
     /**
-     * @param array<Operators> $allowedOperators
-     * @return TypeFactory
+     * @param  array<Operators>  $allowedOperators
      */
     public function limit(array $allowedOperators): TypeFactory
     {
         return (new TypeFactory($this))->limit($allowedOperators);
     }
 
-    public function related(string $relationship, ?callable $condition = null): TypeFactory
+    public function related(string $relationship, callable $condition = null): TypeFactory
     {
         return (new TypeFactory($this))->related($relationship, $condition);
     }
 
     /**
-     * @param array<Operators>|null $allowedOperators
-     * @return CustomFactory
+     * @param  array<Operators>|null  $allowedOperators
      */
-    public static function custom(?array $allowedOperators = null): CustomFactory
+    public static function custom(array $allowedOperators = null): CustomFactory
     {
-        if($allowedOperators) {
+        if ($allowedOperators) {
             $factory = new TypeFactory();
             $factory->limit($allowedOperators);
+
             return new CustomFactory($factory);
         }
 

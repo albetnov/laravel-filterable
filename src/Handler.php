@@ -9,20 +9,21 @@ use Illuminate\Support\Str;
 class Handler
 {
     private readonly string|array $valueString;
+
     private readonly string $queryOperator;
 
     public function __construct(
         private readonly Builder $builder,
-        private readonly  string $column,
-        private readonly  string $operator,
+        private readonly string $column,
+        private readonly string $operator,
         private readonly string $value
-    )
-    {
+    ) {
         $this->valueString = Operator::parseOperatorValue($this->operator, $this->value);
         $this->queryOperator = Operator::getQueryOperator($this->operator);
     }
 
-    private function chainWhereQuery(string $column, array $values): void {
+    private function chainWhereQuery(string $column, array $values): void
+    {
         foreach ($values as $value) {
             $this->builder->where($column, $value);
         }
@@ -40,14 +41,14 @@ class Handler
 
     public function handleNumber(): void
     {
-        $fieldValue = Str::contains($this->value, '.') ? (float)$this->value : (int)$this->value;
+        $fieldValue = Str::contains($this->value, '.') ? (float) $this->value : (int) $this->value;
         $this->builder->where($this->column, $this->queryOperator, $fieldValue);
     }
 
     public function handleDate(): void
     {
         if (is_array($this->valueString) && count($this->valueString) === 2) {
-            $fieldValue = collect($this->valueString)->map(fn(string $item) => Carbon::createFromFormat('n/j/Y', $item))
+            $fieldValue = collect($this->valueString)->map(fn (string $item) => Carbon::createFromFormat('n/j/Y', $item))
                 ->toArray();
 
             if ($this->operator === 'in') {
@@ -72,10 +73,10 @@ class Handler
 
     public function handleBoolean(): void
     {
-        if (!in_array($this->value, ['0', '1'])) {
+        if (! in_array($this->value, ['0', '1'])) {
             abort(400, 'Invalid value for boolean filter');
         }
 
-        $this->builder->where($this->column, $this->queryOperator, (bool)$this->value);
+        $this->builder->where($this->column, $this->queryOperator, (bool) $this->value);
     }
 }
