@@ -1,5 +1,6 @@
 <?php
 
+use Albet\LaravelFilterable\Enums\FilterableType;
 use Albet\LaravelFilterable\Operator;
 
 it('Except works accordingly', function () {
@@ -29,58 +30,34 @@ it('parseOperatorValue return matched sql query value', function () {
         ->and(Operator::parseOperatorValue('not_in', 'multi,value'))->toBeArray()->toContain('multi', 'value');
 });
 
-it('can validate text operator', function () {
-    $lists = ['eq', 'neq', 'contains', 'starts_with', 'ends_with', 'not_contains', 'in', 'not_in', 'have_all'];
-
-    foreach ($lists as $list) {
-        expect(Operator::isTextOperator($list))->toBeTrue();
-    }
-
-    $notValidLists = ['gt', 'lt', 'gte', 'lte'];
-
-    foreach ($notValidLists as $notValidList) {
-        expect(Operator::isTextOperator($notValidList))->toBeFalse();
-    }
+it("is text contains text only operator", function () {
+    expect(Operator::is(FilterableType::TEXT, 'eq'))->toBeTrue()
+        ->and(Operator::is(FilterableType::TEXT, ['eq', 'neq']))->toBeTrue()
+        ->and(Operator::is(FilterableType::TEXT, 'gt'))->toBeFalse()
+        ->and(Operator::is(FilterableType::TEXT, ['gt', 'lt']))->toBeFalse()
+        ->and(Operator::is(FilterableType::TEXT, ['eq', 'gt']))->tobeFalse();
 });
 
-it('can validate number operator', function () {
-    $lists = ['eq', 'neq', 'gt', 'lt', 'gte', 'lte'];
-
-    foreach ($lists as $list) {
-        expect(Operator::isNumberOperator($list))->toBeTrue();
-    }
-
-    $notValidList = Operator::except($lists);
-
-    foreach ($notValidList as $list) {
-        expect(Operator::isNumberOperator($list))->toBeFalse();
-    }
+it("is number contains number only operator", function () {
+    expect(Operator::is(FilterableType::NUMBER, 'eq'))->toBeTrue()
+        ->and(Operator::is(FilterableType::NUMBER, ['eq', 'neq']))->toBeTrue()
+        ->and(Operator::is(FilterableType::NUMBER, 'contains'))->toBeFalse()
+        ->and(Operator::is(FilterableType::NUMBER, ['starts_with', 'contains']))->toBeFalse()
+        ->and(Operator::is(FilterableType::NUMBER, ['eq', 'ends_with']))->tobeFalse();
 });
 
-it('can validate date operator', function () {
-    $lists = ['eq', 'neq', 'gt', 'lt', 'gte', 'lte', 'in', 'not_in'];
-
-    foreach ($lists as $list) {
-        expect(Operator::isDateOperator($list))->toBeTrue();
-    }
-
-    $notValidLists = Operator::except($lists);
-
-    foreach ($notValidLists as $notValidList) {
-        expect(Operator::isDateOperator($notValidList))->toBeFalse();
-    }
+it("is date contains date only operator", function () {
+    expect(Operator::is(FilterableType::DATE, 'eq'))->toBeTrue()
+        ->and(Operator::is(FilterableType::DATE, ['eq', 'neq']))->toBeTrue()
+        ->and(Operator::is(FilterableType::DATE, 'contains'))->toBeFalse()
+        ->and(Operator::is(FilterableType::DATE, ['starts_with', 'contains']))->toBeFalse()
+        ->and(Operator::is(FilterableType::DATE, ['eq', 'ends_with']))->tobeFalse();
 });
 
-it('van validate boolean operator', function () {
-    $lists = ['eq', 'neq'];
-
-    foreach ($lists as $list) {
-        expect(Operator::isBooleanOperator($list))->toBeTrue();
-    }
-
-    $notValidLists = Operator::except($lists);
-
-    foreach ($notValidLists as $notValidList) {
-        expect(Operator::isBooleanOperator($notValidList))->toBeFalse();
-    }
+it("is boolean contains boolean only operator", function () {
+    expect(Operator::is(FilterableType::BOOLEAN, 'eq'))->toBeTrue()
+        ->and(Operator::is(FilterableType::BOOLEAN, ['eq', 'neq']))->toBeTrue()
+        ->and(Operator::is(FilterableType::BOOLEAN, 'contains'))->toBeFalse()
+        ->and(Operator::is(FilterableType::BOOLEAN, ['starts_with', 'contains']))->toBeFalse()
+        ->and(Operator::is(FilterableType::BOOLEAN, ['eq', 'ends_with']))->tobeFalse();
 });
