@@ -30,7 +30,7 @@ it('parseOperatorValue return matched sql query value', function () {
         ->and(Operator::parseOperatorValue('not_in', 'multi,value'))->toBeArray()->toContain('multi', 'value');
 });
 
-it("is text contains text only operator", function () {
+it('is text contains text only operator', function () {
     expect(Operator::is(FilterableType::TEXT, 'eq'))->toBeTrue()
         ->and(Operator::is(FilterableType::TEXT, ['eq', 'neq']))->toBeTrue()
         ->and(Operator::is(FilterableType::TEXT, 'gt'))->toBeFalse()
@@ -38,7 +38,7 @@ it("is text contains text only operator", function () {
         ->and(Operator::is(FilterableType::TEXT, ['eq', 'gt']))->tobeFalse();
 });
 
-it("is number contains number only operator", function () {
+it('is number contains number only operator', function () {
     expect(Operator::is(FilterableType::NUMBER, 'eq'))->toBeTrue()
         ->and(Operator::is(FilterableType::NUMBER, ['eq', 'neq']))->toBeTrue()
         ->and(Operator::is(FilterableType::NUMBER, 'contains'))->toBeFalse()
@@ -46,7 +46,7 @@ it("is number contains number only operator", function () {
         ->and(Operator::is(FilterableType::NUMBER, ['eq', 'ends_with']))->tobeFalse();
 });
 
-it("is date contains date only operator", function () {
+it('is date contains date only operator', function () {
     expect(Operator::is(FilterableType::DATE, 'eq'))->toBeTrue()
         ->and(Operator::is(FilterableType::DATE, ['eq', 'neq']))->toBeTrue()
         ->and(Operator::is(FilterableType::DATE, 'contains'))->toBeFalse()
@@ -54,7 +54,7 @@ it("is date contains date only operator", function () {
         ->and(Operator::is(FilterableType::DATE, ['eq', 'ends_with']))->tobeFalse();
 });
 
-it("is boolean contains boolean only operator", function () {
+it('is boolean contains boolean only operator', function () {
     expect(Operator::is(FilterableType::BOOLEAN, 'eq'))->toBeTrue()
         ->and(Operator::is(FilterableType::BOOLEAN, ['eq', 'neq']))->toBeTrue()
         ->and(Operator::is(FilterableType::BOOLEAN, 'contains'))->toBeFalse()

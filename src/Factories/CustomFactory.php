@@ -11,7 +11,7 @@ class CustomFactory
 
     public function __call(string $method, array $arguments)
     {
-        if($method === "get") {
+        if ($method === 'get') {
             return $this->factory?->getOperators();
         }
     }

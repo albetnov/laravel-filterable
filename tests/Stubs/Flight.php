@@ -24,8 +24,8 @@ class Flight extends Model
             'flight_type' => FilterableType::TEXT,
             'ticket_name' => FilterableType::TEXT->limit([Operators::EQ, Operators::NEQ])->related('ticket'),
             'flight_staff' => FilterableType::NUMBER->limit([Operators::EQ, Operators::NEQ]),
-            'ticket_no' => FilterableType::NUMBER->related('ticket', fn(Builder $query) => $query->where('ticket_no', '>', 100)),
-            'custom' => FilterableType::custom([Operators::EQ])
+            'ticket_no' => FilterableType::NUMBER->related('ticket', fn (Builder $query) => $query->where('ticket_no', '>', 100)),
+            'custom' => FilterableType::custom([Operators::EQ]),
         ];
     }
 

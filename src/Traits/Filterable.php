@@ -49,7 +49,7 @@ trait Filterable
 
         $filter = new Filter($query, $request->get('filters'), $this->getFilterable());
 
-        $filter->whenReceiveCall(fn($method, $arguments) => $this->{$method}(...$arguments));
+        $filter->whenReceiveCall(fn ($method, $arguments) => $this->{$method}(...$arguments));
 
         return $filter->filter();
     }

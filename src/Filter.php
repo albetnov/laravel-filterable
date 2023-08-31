@@ -16,10 +16,9 @@ class Filter
 
     public function __construct(
         private readonly Builder $builder,
-        private readonly ?array  $filters,
-        private readonly ?array  $rows
-    )
-    {
+        private readonly ?array $filters,
+        private readonly ?array $rows
+    ) {
     }
 
     /**
@@ -27,7 +26,7 @@ class Filter
      */
     private function matchCustomOperators(array $customOperators, string $operator): void
     {
-        if (!in_array($operator, $customOperators)) {
+        if (! in_array($operator, $customOperators)) {
             throw new OperatorNotExist($operator);
         }
     }
@@ -37,7 +36,7 @@ class Filter
      */
     private function handle(FilterableType $type, array $filter, Builder $builder): void
     {
-        if (!Operator::is($type, $filter['operator'])) {
+        if (! Operator::is($type, $filter['operator'])) {
             throw new OperatorNotValid($filter['operator'], $type->name);
         }
 
@@ -63,7 +62,9 @@ class Filter
         $relationship = $typeFactory->getRelated();
         if ($relationship) {
             $this->builder->whereHas($relationship['relationship'], function (Builder $query) use ($relationship, $typeFactory, $filter) {
-                if ($relationship['condition']) $relationship['condition']($query);
+                if ($relationship['condition']) {
+                    $relationship['condition']($query);
+                }
                 $this->handle($typeFactory->filterableType, $filter, $query);
             });
         }
@@ -80,7 +81,7 @@ class Filter
      */
     public function filter(): Builder
     {
-        if (!$this->filters || !$this->rows) {
+        if (! $this->filters || ! $this->rows) {
             return $this->builder;
         }
 
@@ -97,7 +98,7 @@ class Filter
                     $filter['operator'],
                     $filter['value']
                 );
-            } else if ($type instanceof TypeFactory) {
+            } elseif ($type instanceof TypeFactory) {
                 $this->handleTypeFactory($type, $filter);
             } else {
                 $this->handle($type, $filter, $this->builder);
