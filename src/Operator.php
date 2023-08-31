@@ -14,8 +14,9 @@ class Operator
         return Operators::toCollection()->diff($items)->values()->toArray();
     }
 
-    private static function assertCollectionOperators(string|array $operators, Collection $allowedOperators): bool {
-        if(is_string($operators))  {
+    private static function assertCollectionOperators(string|array $operators, Collection $allowedOperators): bool
+    {
+        if (is_string($operators)) {
             return $allowedOperators->contains($operators);
         }
 
@@ -25,11 +26,11 @@ class Operator
     private static function assertOperators(string|array $operators, array $allowedOperators): bool
     {
         if (is_string($operators)) {
-            return collect($allowedOperators)->map(fn(Operators $item) => $item->value)->contains($operators);
+            return collect($allowedOperators)->map(fn (Operators $item) => $item->value)->contains($operators);
         }
 
-        return collect($allowedOperators)->map(fn(Operators $item) => $item->value)
-                ->intersect($operators)->count() === count($operators);
+        return collect($allowedOperators)->map(fn (Operators $item) => $item->value)
+            ->intersect($operators)->count() === count($operators);
     }
 
     public static function is(string|FilterableType $mode, string|array $operators): bool

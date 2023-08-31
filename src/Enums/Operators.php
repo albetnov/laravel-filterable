@@ -2,7 +2,6 @@
 
 namespace Albet\LaravelFilterable\Enums;
 
-
 use Illuminate\Support\Collection;
 
 enum Operators: string
