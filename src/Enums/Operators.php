@@ -24,4 +24,13 @@ enum Operators: string
     {
         return collect(self::cases())->pluck('value');
     }
+
+    /**
+     * @param array<Operators> $operators
+     * @return Collection
+     */
+    public static function toValues(array $operators): Collection
+    {
+        return collect($operators)->map(fn (Operators $item) => $item->value);
+    }
 }
