@@ -3,6 +3,7 @@
 namespace Albet\LaravelFilterable;
 
 use Albet\LaravelFilterable\Enums\FilterableType;
+use Albet\LaravelFilterable\Enums\Operators;
 use Albet\LaravelFilterable\Exceptions\OperatorNotExist;
 use Albet\LaravelFilterable\Exceptions\OperatorNotValid;
 use Albet\LaravelFilterable\Factories\CustomFactory;
@@ -26,7 +27,7 @@ class Filter
      */
     private function matchCustomOperators(array $customOperators, string $operator): void
     {
-        if (! in_array($operator, $customOperators)) {
+        if (!Operators::toValues($customOperators)->contains($operator)) {
             throw new OperatorNotExist($operator);
         }
     }
@@ -52,6 +53,7 @@ class Filter
 
     /**
      * @throws OperatorNotExist
+     * @throws OperatorNotValid
      */
     private function handleTypeFactory(TypeFactory $typeFactory, array $filter): void
     {
@@ -67,7 +69,10 @@ class Filter
                 }
                 $this->handle($typeFactory->filterableType, $filter, $query);
             });
+            return;
         }
+
+        $this->handle($typeFactory->filterableType, $filter, $this->builder);
     }
 
     public function whenReceiveCall(\Closure $call): void
