@@ -20,7 +20,7 @@ class TypeFactory
 
     public function __call(string $method, array $arguments)
     {
-        return match($method) {
+        return match ($method) {
             'getOperators' => $this->filteredOperator,
             'getRelated' => $this->related,
             default => throw new \BadMethodCallException("Method {$method} does not exist")
@@ -28,14 +28,14 @@ class TypeFactory
     }
 
     /**
-     * @param array<Operators> $allowedOperators
+     * @param  array<Operators>  $allowedOperators
      * @return $this
      */
     public function limit(array $allowedOperators): TypeFactory
     {
         $operatorsValue = Operators::toValues($allowedOperators);
 
-        if ($this->filterableType && !Operator::is($this->filterableType, $operatorsValue->toArray())) {
+        if ($this->filterableType && ! Operator::is($this->filterableType, $operatorsValue->toArray())) {
             throw new \InvalidArgumentException("Operator not supported for type {$this->filterableType->name}");
         }
 
@@ -45,7 +45,7 @@ class TypeFactory
     }
 
     /**
-     * @param (callable(Builder): void)|null $condition
+     * @param  (callable(Builder): void)|null  $condition
      * @return $this
      */
     public function related(string $relationship, callable $condition = null): TypeFactory

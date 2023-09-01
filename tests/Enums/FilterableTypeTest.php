@@ -6,7 +6,7 @@ use Albet\LaravelFilterable\Factories\CustomFactory;
 use Albet\LaravelFilterable\Factories\TypeFactory;
 use Illuminate\Database\Eloquent\Builder;
 
-it("can construct limited type factory", function () {
+it('can construct limited type factory', function () {
     $type = FilterableType::TEXT->limit([Operators::EQ, Operators::STARTS_WITH]);
 
     expect($type)->toBeInstanceOf(TypeFactory::class)
@@ -14,11 +14,11 @@ it("can construct limited type factory", function () {
         ->and($type->filterableType)->toBe(FilterableType::TEXT);
 });
 
-it("throws invalid argument exception if not valid operators being passed", function () {
+it('throws invalid argument exception if not valid operators being passed', function () {
     FilterableType::NUMBER->limit([Operators::ENDS_WITH]);
 })->throws(\InvalidArgumentException::class);
 
-it("can construct related type factory (without condition)", function () {
+it('can construct related type factory (without condition)', function () {
     $type = FilterableType::DATE->related('flights');
 
     expect($type)->toBeInstanceOf(TypeFactory::class)
@@ -29,7 +29,7 @@ it("can construct related type factory (without condition)", function () {
         ->and($type->filterableType)->toBe(FilterableType::DATE);
 });
 
-it("can construct related type factory (with condition)", function () {
+it('can construct related type factory (with condition)', function () {
     $type = FilterableType::DATE->related('flights', function (Builder $builder) {
         $builder->where('flight_no', '>', 1);
     });
@@ -43,14 +43,14 @@ it("can construct related type factory (with condition)", function () {
         ->and($type->filterableType)->toBe(FilterableType::DATE);
 });
 
-it("can construct custom factory (without limit)", function () {
+it('can construct custom factory (without limit)', function () {
     $type = FilterableType::custom();
 
     expect($type)->toBeInstanceOf(CustomFactory::class)
         ->and($type->get())->toBeNull();
 });
 
-it("can construct custom factory (with limit)", function () {
+it('can construct custom factory (with limit)', function () {
     $type = FilterableType::custom([Operators::EQ, Operators::STARTS_WITH]);
 
     expect($type)->toBeInstanceOf(CustomFactory::class)

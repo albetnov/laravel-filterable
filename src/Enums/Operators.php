@@ -26,8 +26,7 @@ enum Operators: string
     }
 
     /**
-     * @param array<Operators> $operators
-     * @return Collection
+     * @param  array<Operators>  $operators
      */
     public static function toValues(array $operators): Collection
     {

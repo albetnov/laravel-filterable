@@ -1,7 +1,6 @@
 <?php
 
 use Albet\LaravelFilterable\Enums\FilterableType;
-use Albet\LaravelFilterable\Enums\Operators;
 use Albet\LaravelFilterable\Operator;
 
 it('Except works accordingly', function () {

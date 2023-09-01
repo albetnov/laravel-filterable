@@ -27,7 +27,7 @@ class Filter
      */
     private function matchCustomOperators(array $customOperators, string $operator): void
     {
-        if (!Operators::toValues($customOperators)->contains($operator)) {
+        if (! Operators::toValues($customOperators)->contains($operator)) {
             throw new OperatorNotExist($operator);
         }
     }
@@ -69,6 +69,7 @@ class Filter
                 }
                 $this->handle($typeFactory->filterableType, $filter, $query);
             });
+
             return;
         }
 

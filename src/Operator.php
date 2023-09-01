@@ -20,7 +20,7 @@ class Operator
         }
 
         return Operators::toValues($allowedOperators)
-                ->intersect($operators)->count() === count($operators);
+            ->intersect($operators)->count() === count($operators);
     }
 
     public static function is(FilterableType $mode, string|array $operators): bool
