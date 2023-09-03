@@ -40,26 +40,26 @@ it('can get columns from function', function () {
     expect($result)->toBeArray()->toEqual($definer);
 });
 
-it("throws a validation error for invalid payload", function () {
+it('throws a validation error for invalid payload', function () {
     Helpers::fakeFilter('not_exist', 'eq', 'abc');
 
-    expect(fn() => Flight::filter())->toThrow(ValidationException::class);
+    expect(fn () => Flight::filter())->toThrow(ValidationException::class);
 
     Helpers::fakeFilter('flight_no', 'new_opr', 'abc');
 
-    expect(fn() => Flight::filter())->toThrow(ValidationException::class);
+    expect(fn () => Flight::filter())->toThrow(ValidationException::class);
 
     Helpers::fakeFilter('flight_no', 'neq', '');
 
-    expect(fn() => Flight::filter())->toThrow(ValidationException::class);
+    expect(fn () => Flight::filter())->toThrow(ValidationException::class);
 });
 
-it("can perform a filter", function () {
+it('can perform a filter', function () {
     Helpers::fakeFilter('flight_no', 'gt', '10');
 
     expect(Flight::filter()->toRawSql())->toEqual('select * from "flights" where "flight_no" > 10');
 });
 
-it("throws PropertyNotExist", function () {
+it('throws PropertyNotExist', function () {
     Blank::filter();
 })->throws(PropertyNotExist::class);

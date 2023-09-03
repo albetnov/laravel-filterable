@@ -8,6 +8,7 @@ use Albet\LaravelFilterable\Filter;
 use Albet\LaravelFilterable\Tests\Helpers;
 use Albet\LaravelFilterable\Tests\Stubs\Flight;
 use Illuminate\Database\Eloquent\Builder;
+
 use function Pest\Laravel\partialMock;
 
 it('can filter even if no payload is passed', function () {
@@ -139,7 +140,7 @@ it('can add extra condition for relation filter', function () {
             'field' => 'ticket_no',
         ]],
         [
-            'ticket_no' => FilterableType::NUMBER->related('ticket', fn(Builder $query) => $query->where('ticket_no', '>', 100)),
+            'ticket_no' => FilterableType::NUMBER->related('ticket', fn (Builder $query) => $query->where('ticket_no', '>', 100)),
         ]
     );
 
@@ -149,12 +150,12 @@ it('can add extra condition for relation filter', function () {
     ));
 });
 
-it("can filter custom", function () {
+it('can filter custom', function () {
     /** @var Flight|Mockery\MockInterface $model */
     $model = partialMock(Flight::class);
 
-    $model->shouldReceive("filterCustom")
-        ->with(Builder::class, "eq", "custom")
+    $model->shouldReceive('filterCustom')
+        ->with(Builder::class, 'eq', 'custom')
         ->once();
 
     $filter = new Filter(
@@ -163,10 +164,10 @@ it("can filter custom", function () {
         [[
             'operator' => 'eq',
             'value' => 'custom',
-            'field' => 'custom'
+            'field' => 'custom',
         ]],
         [
-            'custom' => FilterableType::custom()
+            'custom' => FilterableType::custom(),
         ]
     );
 
