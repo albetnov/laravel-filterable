@@ -22,5 +22,5 @@ it('Converts each values to enums', function () {
 
     expect($enums)->toBeInstanceOf(Collection::class)
         ->and($values)->toEqual(['eq', 'neq', 'contains', 'not_contains', 'starts_with', 'ends_with', 'in', 'not_in', 'have_all',
-        'gt', 'gte', 'lt', 'lte']);
+            'gt', 'gte', 'lt', 'lte']);
 });

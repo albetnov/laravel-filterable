@@ -21,12 +21,8 @@ enum FilterableType
         return (new TypeFactory($this))->limit($allowedOperators);
     }
 
-
     /**
-     * @param string $relationship
-     * @param (callable(Builder): void)|null $condition
-     * @return TypeFactory
-     *
+     * @param  (callable(Builder): void)|null  $condition
      */
     public function related(string $relationship, callable $condition = null): TypeFactory
     {
