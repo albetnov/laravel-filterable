@@ -31,7 +31,7 @@ class Handler
 
     public function handleText(): void
     {
-        match ($this->queryOperator) {
+        match ($this->operator) {
             'in' => $this->builder->whereIn($this->column, $this->valueString),
             'not_in' => $this->builder->whereNotIn($this->column, $this->valueString),
             'have_all' => $this->chainWhereQuery($this->column, $this->valueString),
