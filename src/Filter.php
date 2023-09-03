@@ -9,16 +9,16 @@ use Albet\LaravelFilterable\Exceptions\OperatorNotValid;
 use Albet\LaravelFilterable\Factories\CustomFactory;
 use Albet\LaravelFilterable\Factories\TypeFactory;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 
 class Filter
 {
-    private \Closure $parent;
-
     public function __construct(
         private readonly Builder $builder,
+        private readonly Model $parent,
         private readonly ?array $filters,
-        private readonly ?array $rows
+        private readonly ?array $rows,
     ) {
     }
 
@@ -75,12 +75,6 @@ class Filter
 
         $this->handle($typeFactory->getType(), $filter, $this->builder);
     }
-
-    public function whenReceiveCall(\Closure $call): void
-    {
-        $this->parent = $call;
-    }
-
     /**
      * @throws OperatorNotValid
      * @throws OperatorNotExist
@@ -96,14 +90,9 @@ class Filter
             $type = $this->rows[$filter['field']];
 
             if ($type instanceof CustomFactory) {
-                $call = $this->parent;
                 $field = Str::replace('_', ' ', $filter['field']);
-                $call(
-                    Str::camel("filter {$field}"),
-                    $this->builder,
-                    $filter['operator'],
-                    $filter['value']
-                );
+                $method = Str::camel("filter $field");
+                $this->parent->{$method}($this->builder, $filter['operator'], $filter['value']);
             } elseif ($type instanceof TypeFactory) {
                 $this->handleTypeFactory($type, $filter);
             } else {
