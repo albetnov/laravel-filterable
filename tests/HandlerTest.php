@@ -3,31 +3,32 @@
 use Albet\LaravelFilterable\Handler;
 use Illuminate\Database\Eloquent\Builder;
 use Mockery\MockInterface;
+
 use function Pest\Laravel\partialMock;
 
-it("Can handle text (default operator)", function () {
+it('Can handle text (default operator)', function () {
     /** @var Builder|MockInterface $builder */
     $builder = partialMock(Builder::class);
     $builder->shouldReceive('where')->with('random', '=', 'abc')->once();
 
     $handler = new Handler(
         builder: $builder,
-        column: "random",
-        operator: "eq",
-        value: "abc"
+        column: 'random',
+        operator: 'eq',
+        value: 'abc'
     );
 
     $handler->handleText();
 });
 
-it("Can handle text (in operator)", function () {
+it('Can handle text (in operator)', function () {
     /** @var Builder|MockInterface $builder */
     $builder = mock(Builder::class);
     $builder->shouldReceive('whereIn')->with('customers', ['a', 'b', 'c'])->once();
 
     $handler = new Handler(
         builder: $builder,
-        column: "customers",
+        column: 'customers',
         operator: 'in',
         value: 'a,b,c'
     );
@@ -35,14 +36,14 @@ it("Can handle text (in operator)", function () {
     $handler->handleText();
 });
 
-it("Can handle text (not_in operator)", function () {
+it('Can handle text (not_in operator)', function () {
     /** @var Builder|MockInterface $builder */
     $builder = mock(Builder::class);
     $builder->shouldReceive('whereNotIn')->with('customers', ['a', 'b', 'c'])->once();
 
     $handler = new Handler(
         builder: $builder,
-        column: "customers",
+        column: 'customers',
         operator: 'not_in',
         value: 'a,b,c'
     );
@@ -50,7 +51,7 @@ it("Can handle text (not_in operator)", function () {
     $handler->handleText();
 });
 
-it("Can handle text (have_all operator)", function () {
+it('Can handle text (have_all operator)', function () {
     /** @var Builder|MockInterface $builder */
     $builder = mock(Builder::class);
     $builder->shouldReceive('where')->with('customers', 'a')->once();
@@ -59,7 +60,7 @@ it("Can handle text (have_all operator)", function () {
 
     $handler = new Handler(
         builder: $builder,
-        column: "customers",
+        column: 'customers',
         operator: 'have_all',
         value: 'a,b'
     );
@@ -67,7 +68,7 @@ it("Can handle text (have_all operator)", function () {
     $handler->handleText();
 });
 
-it("Can handle number (non float)", function () {
+it('Can handle number (non float)', function () {
     /** @var Builder|MockInterface $builder */
     $builder = mock(Builder::class);
     $builder->shouldReceive('where')->with('threads', '>', 10)->once();
@@ -82,7 +83,7 @@ it("Can handle number (non float)", function () {
     $handler->handleNumber();
 });
 
-it("Can handle number (float)", function () {
+it('Can handle number (float)', function () {
     /** @var Builder|MockInterface $builder */
     $builder = mock(Builder::class);
     $builder->shouldReceive('where')->with('threads', '>', 10.2)->once();
