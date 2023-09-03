@@ -8,7 +8,7 @@ use Albet\LaravelFilterable\Operator;
 use Albet\LaravelFilterable\Traits\Filterable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasOne;
-use Illuminate\Database\Query\Builder;
+use Illuminate\Database\Eloquent\Builder;
 
 /**
  * @method static Builder filter()
