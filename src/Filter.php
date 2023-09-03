@@ -67,13 +67,13 @@ class Filter
                 if ($relationship['condition']) {
                     $relationship['condition']($query);
                 }
-                $this->handle($typeFactory->filterableType, $filter, $query);
+                $this->handle($typeFactory->getType(), $filter, $query);
             });
 
             return;
         }
 
-        $this->handle($typeFactory->filterableType, $filter, $this->builder);
+        $this->handle($typeFactory->getType(), $filter, $this->builder);
     }
 
     public function whenReceiveCall(\Closure $call): void

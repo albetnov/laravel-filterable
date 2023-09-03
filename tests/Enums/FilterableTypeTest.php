@@ -11,7 +11,7 @@ it('can construct limited type factory', function () {
 
     expect($type)->toBeInstanceOf(TypeFactory::class)
         ->and($type->getOperators())->toBeArray()->toHaveCount(2)->toEqual([Operators::EQ, Operators::STARTS_WITH])
-        ->and($type->filterableType)->toBe(FilterableType::TEXT);
+        ->and($type->getType())->toBe(FilterableType::TEXT);
 });
 
 it('throws invalid argument exception if not valid operators being passed', function () {
@@ -26,7 +26,7 @@ it('can construct related type factory (without condition)', function () {
             'relationship' => 'flights',
             'condition' => null,
         ])
-        ->and($type->filterableType)->toBe(FilterableType::DATE);
+        ->and($type->getType())->toBe(FilterableType::DATE);
 });
 
 it('can construct related type factory (with condition)', function () {
@@ -40,7 +40,7 @@ it('can construct related type factory (with condition)', function () {
         ->and($related)->toBeArray()->toHaveCount(2)
         ->and($related['relationship'])->toEqual('flights')
         ->and($related['condition'])->toBeInstanceOf(Closure::class)
-        ->and($type->filterableType)->toBe(FilterableType::DATE);
+        ->and($type->getType())->toBe(FilterableType::DATE);
 });
 
 it('can construct custom factory (without limit)', function () {
