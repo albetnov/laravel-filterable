@@ -75,6 +75,7 @@ class Filter
 
         $this->handle($typeFactory->getType(), $filter, $this->builder);
     }
+
     /**
      * @throws OperatorNotValid
      * @throws OperatorNotExist
