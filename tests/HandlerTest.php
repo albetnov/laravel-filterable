@@ -2,6 +2,7 @@
 
 use Albet\LaravelFilterable\Handler;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Carbon;
 use Mockery\MockInterface;
 
 use function Pest\Laravel\partialMock;
@@ -96,4 +97,57 @@ it('Can handle number (float)', function () {
     );
 
     $handler->handleNumber();
+});
+
+it("Can handle date", function () {
+    /** @var Builder|MockInterface $builder */
+    $builder = mock(Builder::class);
+    $builder->shouldReceive('whereDate')->with('booked_at', '>', Carbon::class)->once();
+
+    $handler = new Handler(
+        builder: $builder,
+        column: 'booked_at',
+        operator: 'gt',
+        value: '8/2/2023'
+    );
+
+    $handler->handleDate();
+});
+
+it("Can handle two dates (in)", function () {
+    /** @var Builder|MockInterface $builder */
+    $builder = mock(Builder::class);
+    $builder->shouldReceive('whereDate')->with('booked_at', '>=', Carbon::class)->once()
+        ->andReturnSelf();
+
+    $builder->shouldReceive('whereDate')->with('booked_at', '<=', Carbon::class)->once()
+        ->andReturnSelf();
+
+    $handler = new Handler(
+        builder: $builder,
+        column: "booked_at",
+        operator: "in",
+        value: '8/2/2023,14/2/2023'
+    );
+
+    $handler->handleDate();
+});
+
+it("Can handle two dates (not_in)", function () {
+    /** @var Builder|MockInterface $builder */
+    $builder = mock(Builder::class);
+    $builder->shouldReceive('whereDate')->with('booked_at', '<', Carbon::class)->once()
+        ->andReturnSelf();
+
+    $builder->shouldReceive('orWhereDate')->with('booked_at', '>', Carbon::class)->once()
+        ->andReturnSelf();
+
+    $handler = new Handler(
+        builder: $builder,
+        column: "booked_at",
+        operator: "not_in",
+        value: '8/2/2023,10/2/2023'
+    );
+
+    $handler->handleDate();
 });

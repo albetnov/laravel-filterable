@@ -12,6 +12,7 @@ class CustomFactory
     public function __call(string $method, array $arguments)
     {
         if ($method === 'get') {
+            /** @phpstan-ignore-next-line */
             return $this->factory?->getOperators();
         }
     }

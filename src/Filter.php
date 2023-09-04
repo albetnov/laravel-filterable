@@ -57,22 +57,27 @@ class Filter
      */
     private function handleTypeFactory(TypeFactory $typeFactory, array $filter): void
     {
+        /** @phpstan-ignore-next-line */
         if ($typeFactory->getOperators()) {
+            /** @phpstan-ignore-next-line */
             $this->matchCustomOperators($typeFactory->getOperators(), $filter['operator']);
         }
 
+        /** @phpstan-ignore-next-line */
         $relationship = $typeFactory->getRelated();
         if ($relationship) {
             $this->builder->whereHas($relationship['relationship'], function (Builder $query) use ($relationship, $typeFactory, $filter) {
                 if ($relationship['condition']) {
                     $relationship['condition']($query);
                 }
+                /** @phpstan-ignore-next-line */
                 $this->handle($typeFactory->getType(), $filter, $query);
             });
 
             return;
         }
 
+        /** @phpstan-ignore-next-line */
         $this->handle($typeFactory->getType(), $filter, $this->builder);
     }
 
