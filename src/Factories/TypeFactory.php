@@ -13,9 +13,19 @@ class TypeFactory
 
     private ?array $related = null;
 
-    public function __construct(readonly ?FilterableType $filterableType = null)
+    public function __construct(private readonly ?FilterableType $filterableType = null)
     {
 
+    }
+
+    public function __call(string $method, array $arguments)
+    {
+        return match ($method) {
+            'getOperators' => $this->filteredOperator,
+            'getRelated' => $this->related,
+            'getType' => $this->filterableType,
+            default => throw new \BadMethodCallException("Method {$method} does not exist")
+        };
     }
 
     /**
@@ -24,13 +34,9 @@ class TypeFactory
      */
     public function limit(array $allowedOperators): TypeFactory
     {
-        $operatorsValue = collect($allowedOperators)->map(fn (Operators $item) => $item->value);
+        $operatorsValue = Operators::toValues($allowedOperators);
 
-        if (Operator::is('all', $operatorsValue)) {
-            throw new \InvalidArgumentException('Operator not allowed');
-        }
-
-        if ($this->filterableType && Operator::is($this->filterableType, $operatorsValue)) {
+        if ($this->filterableType && ! Operator::is($this->filterableType, $operatorsValue->toArray())) {
             throw new \InvalidArgumentException("Operator not supported for type {$this->filterableType->name}");
         }
 
@@ -51,15 +57,5 @@ class TypeFactory
         ];
 
         return $this;
-    }
-
-    public function getOperators(): ?array
-    {
-        return $this->filteredOperator;
-    }
-
-    public function getRelated(): ?array
-    {
-        return $this->related;
     }
 }

@@ -47,9 +47,12 @@ trait Filterable
             'filters.*.value' => 'required',
         ]);
 
-        $filter = new Filter($query, $request->get('filters'), $this->getFilterable());
-
-        $filter->whenReceiveCall(fn ($method, $arguments) => $this->{$method}(...$arguments));
+        $filter = new Filter(
+            builder: $query,
+            parent: $this,
+            filters: $request->get('filters'),
+            rows: $this->getFilterable()
+        );
 
         return $filter->filter();
     }

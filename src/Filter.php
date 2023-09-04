@@ -3,21 +3,23 @@
 namespace Albet\LaravelFilterable;
 
 use Albet\LaravelFilterable\Enums\FilterableType;
+use Albet\LaravelFilterable\Enums\Operators;
 use Albet\LaravelFilterable\Exceptions\OperatorNotExist;
 use Albet\LaravelFilterable\Exceptions\OperatorNotValid;
+use Albet\LaravelFilterable\Exceptions\ValueNotValid;
 use Albet\LaravelFilterable\Factories\CustomFactory;
 use Albet\LaravelFilterable\Factories\TypeFactory;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 
 class Filter
 {
-    private \Closure $parent;
-
     public function __construct(
         private readonly Builder $builder,
+        private readonly Model $parent,
         private readonly ?array $filters,
-        private readonly ?array $rows
+        private readonly ?array $rows,
     ) {
     }
 
@@ -26,13 +28,14 @@ class Filter
      */
     private function matchCustomOperators(array $customOperators, string $operator): void
     {
-        if (! in_array($operator, $customOperators)) {
+        if (! Operators::toValues($customOperators)->contains($operator)) {
             throw new OperatorNotExist($operator);
         }
     }
 
     /**
      * @throws OperatorNotValid
+     * @throws ValueNotValid
      */
     private function handle(FilterableType $type, array $filter, Builder $builder): void
     {
@@ -52,27 +55,32 @@ class Filter
 
     /**
      * @throws OperatorNotExist
+     * @throws OperatorNotValid
      */
     private function handleTypeFactory(TypeFactory $typeFactory, array $filter): void
     {
+        /** @phpstan-ignore-next-line */
         if ($typeFactory->getOperators()) {
+            /** @phpstan-ignore-next-line */
             $this->matchCustomOperators($typeFactory->getOperators(), $filter['operator']);
         }
 
+        /** @phpstan-ignore-next-line */
         $relationship = $typeFactory->getRelated();
         if ($relationship) {
             $this->builder->whereHas($relationship['relationship'], function (Builder $query) use ($relationship, $typeFactory, $filter) {
                 if ($relationship['condition']) {
                     $relationship['condition']($query);
                 }
-                $this->handle($typeFactory->filterableType, $filter, $query);
+                /** @phpstan-ignore-next-line */
+                $this->handle($typeFactory->getType(), $filter, $query);
             });
-        }
-    }
 
-    public function whenReceiveCall(\Closure $call): void
-    {
-        $this->parent = $call;
+            return;
+        }
+
+        /** @phpstan-ignore-next-line */
+        $this->handle($typeFactory->getType(), $filter, $this->builder);
     }
 
     /**
@@ -90,14 +98,9 @@ class Filter
             $type = $this->rows[$filter['field']];
 
             if ($type instanceof CustomFactory) {
-                $call = $this->parent;
                 $field = Str::replace('_', ' ', $filter['field']);
-                $call(
-                    Str::camel("filter {$field}"),
-                    $this->builder,
-                    $filter['operator'],
-                    $filter['value']
-                );
+                $method = Str::camel("filter $field");
+                $this->parent->{$method}($this->builder, $filter['operator'], $filter['value']);
             } elseif ($type instanceof TypeFactory) {
                 $this->handleTypeFactory($type, $filter);
             } else {

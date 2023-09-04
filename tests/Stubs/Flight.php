@@ -6,9 +6,9 @@ use Albet\LaravelFilterable\Enums\FilterableType;
 use Albet\LaravelFilterable\Enums\Operators;
 use Albet\LaravelFilterable\Operator;
 use Albet\LaravelFilterable\Traits\Filterable;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasOne;
-use Illuminate\Database\Query\Builder;
 
 /**
  * @method static Builder filter()

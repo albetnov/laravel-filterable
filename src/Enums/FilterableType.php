@@ -4,6 +4,7 @@ namespace Albet\LaravelFilterable\Enums;
 
 use Albet\LaravelFilterable\Factories\CustomFactory;
 use Albet\LaravelFilterable\Factories\TypeFactory;
+use Illuminate\Database\Eloquent\Builder;
 
 enum FilterableType
 {
@@ -20,6 +21,9 @@ enum FilterableType
         return (new TypeFactory($this))->limit($allowedOperators);
     }
 
+    /**
+     * @param  (callable(Builder): void)|null  $condition
+     */
     public function related(string $relationship, callable $condition = null): TypeFactory
     {
         return (new TypeFactory($this))->related($relationship, $condition);

@@ -14,7 +14,7 @@ class Tickets extends Model
 {
     use Filterable;
 
-    protected array $rows = [
+    protected array $filterableColumns = [
         'ticket_id' => FilterableType::NUMBER,
         'ticket_no' => FilterableType::TEXT,
         'booked_at' => FilterableType::DATE,

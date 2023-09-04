@@ -4,7 +4,6 @@ namespace Albet\LaravelFilterable;
 
 use Albet\LaravelFilterable\Enums\FilterableType;
 use Albet\LaravelFilterable\Enums\Operators;
-use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 
 class Operator
@@ -14,26 +13,17 @@ class Operator
         return Operators::toCollection()->diff($items)->values()->toArray();
     }
 
-    private static function assertCollectionOperators(string|array $operators, Collection $allowedOperators): bool
-    {
-        if (is_string($operators)) {
-            return $allowedOperators->contains($operators);
-        }
-
-        return $allowedOperators->intersect($operators)->count() === count($operators);
-    }
-
     private static function assertOperators(string|array $operators, array $allowedOperators): bool
     {
         if (is_string($operators)) {
-            return collect($allowedOperators)->map(fn (Operators $item) => $item->value)->contains($operators);
+            return Operators::toValues($allowedOperators)->contains($operators);
         }
 
-        return collect($allowedOperators)->map(fn (Operators $item) => $item->value)
+        return Operators::toValues($allowedOperators)
             ->intersect($operators)->count() === count($operators);
     }
 
-    public static function is(string|FilterableType $mode, string|array $operators): bool
+    public static function is(FilterableType $mode, string|array $operators): bool
     {
         return match ($mode) {
             FilterableType::TEXT => self::assertOperators(
@@ -45,8 +35,7 @@ class Operator
                 Operators::GTE, Operators::LT, Operators::LTE]),
             FilterableType::DATE => self::assertOperators($operators, [Operators::EQ, Operators::NEQ, Operators::GT,
                 Operators::GTE, Operators::LT, Operators::LTE, Operators::IN, Operators::NOT_IN]),
-            FilterableType::BOOLEAN => self::assertOperators($operators, [Operators::EQ, Operators::NEQ]),
-            default => self::assertCollectionOperators($operators, Operators::toCollection()),
+            FilterableType::BOOLEAN => self::assertOperators($operators, [Operators::EQ, Operators::NEQ])
         };
     }
 

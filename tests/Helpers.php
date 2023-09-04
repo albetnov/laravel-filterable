@@ -3,6 +3,9 @@
 namespace Albet\LaravelFilterable\Tests;
 
 use Albet\LaravelFilterable\Operator;
+use Albet\LaravelFilterable\Tests\Stubs\Flight;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 
 class Helpers
 {
@@ -64,5 +67,15 @@ class Helpers
         request()->merge([
             'filters' => $allFilters,
         ]);
+    }
+
+    public static function makeBuilder(Model $model): Builder
+    {
+        $builder = app(Builder::class);
+
+        $builder->setModel(new Flight());
+        $builder->getGrammar()->setConnection($builder->getConnection());
+
+        return $builder;
     }
 }
