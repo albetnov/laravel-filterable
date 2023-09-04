@@ -2,6 +2,8 @@
 
 namespace Albet\LaravelFilterable;
 
+use Albet\LaravelFilterable\Enums\FilterableType;
+use Albet\LaravelFilterable\Exceptions\ValueNotValid;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
@@ -71,10 +73,13 @@ class Handler
         $this->builder->whereDate($this->column, $this->queryOperator, $fieldValue);
     }
 
+    /**
+     * @throws ValueNotValid
+     */
     public function handleBoolean(): void
     {
         if (! in_array($this->value, ['0', '1'])) {
-            abort(400, 'Invalid value for boolean filter');
+            throw new ValueNotValid($this->value, FilterableType::BOOLEAN);
         }
 
         $this->builder->where($this->column, $this->queryOperator, (bool) $this->value);

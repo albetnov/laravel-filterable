@@ -1,5 +1,6 @@
 <?php
 
+use Albet\LaravelFilterable\Exceptions\ValueNotValid;
 use Albet\LaravelFilterable\Handler;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
@@ -151,3 +152,41 @@ it("Can handle two dates (not_in)", function () {
 
     $handler->handleDate();
 });
+
+it("Can handle boolean (0, 1)", function () {
+    /** @var Builder|MockInterface $builder */
+    $builder = mock(Builder::class);
+    $builder->shouldReceive('where')->with('is_booked', '=', true)->once()
+        ->andReturnSelf();
+
+    $builder->shouldReceive('where')->with('is_booked', '!=', false)->once()->andReturnSelf();
+
+    $handler = new Handler(
+        builder: $builder,
+        column: "is_booked",
+        operator: "eq",
+        value: '1'
+    );
+
+    $handler->handleBoolean();
+
+    $handler = new Handler(
+        builder: $builder,
+        column: "is_booked",
+        operator: "neq",
+        value: '0'
+    );
+
+    $handler->handleBoolean();
+});
+
+it("throw exception if boolean value is invalid", function () {
+    $handler = new Handler(
+        builder: app(Builder::class),
+        column: "is_booked",
+        operator: "neq",
+        value: "10"
+    );
+
+    $handler->handleBoolean();
+})->throws(ValueNotValid::class);

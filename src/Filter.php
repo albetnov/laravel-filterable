@@ -6,6 +6,7 @@ use Albet\LaravelFilterable\Enums\FilterableType;
 use Albet\LaravelFilterable\Enums\Operators;
 use Albet\LaravelFilterable\Exceptions\OperatorNotExist;
 use Albet\LaravelFilterable\Exceptions\OperatorNotValid;
+use Albet\LaravelFilterable\Exceptions\ValueNotValid;
 use Albet\LaravelFilterable\Factories\CustomFactory;
 use Albet\LaravelFilterable\Factories\TypeFactory;
 use Illuminate\Database\Eloquent\Builder;
@@ -34,6 +35,7 @@ class Filter
 
     /**
      * @throws OperatorNotValid
+     * @throws ValueNotValid
      */
     private function handle(FilterableType $type, array $filter, Builder $builder): void
     {
