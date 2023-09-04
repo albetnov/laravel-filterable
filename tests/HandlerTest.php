@@ -100,7 +100,7 @@ it('Can handle number (float)', function () {
     $handler->handleNumber();
 });
 
-it("Can handle date", function () {
+it('Can handle date', function () {
     /** @var Builder|MockInterface $builder */
     $builder = mock(Builder::class);
     $builder->shouldReceive('whereDate')->with('booked_at', '>', Carbon::class)->once();
@@ -115,7 +115,7 @@ it("Can handle date", function () {
     $handler->handleDate();
 });
 
-it("Can handle two dates (in)", function () {
+it('Can handle two dates (in)', function () {
     /** @var Builder|MockInterface $builder */
     $builder = mock(Builder::class);
     $builder->shouldReceive('whereDate')->with('booked_at', '>=', Carbon::class)->once()
@@ -126,15 +126,15 @@ it("Can handle two dates (in)", function () {
 
     $handler = new Handler(
         builder: $builder,
-        column: "booked_at",
-        operator: "in",
+        column: 'booked_at',
+        operator: 'in',
         value: '8/2/2023,14/2/2023'
     );
 
     $handler->handleDate();
 });
 
-it("Can handle two dates (not_in)", function () {
+it('Can handle two dates (not_in)', function () {
     /** @var Builder|MockInterface $builder */
     $builder = mock(Builder::class);
     $builder->shouldReceive('whereDate')->with('booked_at', '<', Carbon::class)->once()
@@ -145,8 +145,8 @@ it("Can handle two dates (not_in)", function () {
 
     $handler = new Handler(
         builder: $builder,
-        column: "booked_at",
-        operator: "not_in",
+        column: 'booked_at',
+        operator: 'not_in',
         value: '8/2/2023,10/2/2023'
     );
 
