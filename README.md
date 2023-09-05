@@ -14,22 +14,10 @@ You can install the package via composer:
 composer require albetnov/laravel-filterable
 ```
 
-You can publish the config file with:
-
-```bash
-php artisan vendor:publish --tag="laravel-filterable-config"
-```
-
-This is the contents of the published config file:
-
-```php
-return [
-];
-```
-
 ## Usage
 
-Simply add `Filterable` trait in your model and define either `$rows` or `getRows()` to define filterable columns:
+Simply add `Filterable` trait in your model and define either `$filterableColumns` or `filterableColumns()` 
+(if you need extra logic) to define a filterable columns:
 
 ```php
 <?php
@@ -43,17 +31,30 @@ use Illuminate\Database\Eloquent\Model;
 class Flight extends Model {
     use Filterable;
     
-    protected arrray $rows = [
+    protected arrray $filterableColumns = [
         'ticket_no' => FilterableType::NUMBER,
         'customer_name' => FilterableType::TEXT,
         'schedule' => FilterableType::DATE
     ];
+    
+    protected function filterableColumns(): array {
+        return [
+            'customer_address' => FilterableType::custom(),
+        ];
+    }
 }
 ```
 
+### Getting Filterable Columns
+
+If both are defined, Filterable will priority the method over property. As defined in:
+[Filterable.php](https://github.com/albetnov/laravel-filterable/blob/99c460686339355c59d693a8572e0d2106d1eed5/src/Traits/Filterable.php#L20-L31)
+
+If none exist though, Filterable will throws `PropertyNotExist` exception.
+
 ### Filterable Type
 
-There are three FilterableType options available:
+There are Five FilterableType options available:
 
 - Number <br />
 This type will cast the given payload to either float or int, depending on whether the string contains a . prefix (indicating a float) or not (indicating an int).
@@ -64,7 +65,104 @@ A type designed for handling text-based filters.
 - Date <br />
 A type intended for handling date-based filters. This will cast the payload to the Carbon format and adjust the query accordingly.
 
-After that, you can use your model this way:
+- Boolean <br />
+A type intended for handling boolean-based filters. This type will cast the payload to boolean depending on `0` and `1`.
+
+### Modifiers
+
+Each of the `FilterableType` supports a modifier to alter the behaviour of filtering from the assigned field.
+There are 2 modifiers you can use for now.
+
+- `limit` <br />
+Allows you to limit the available operator, leaving the rest of the operators become invalid and throws `OperatorNotExist`
+exception. The function have one argument receiving an array of `Operators`. Usage Example:
+
+```php
+
+use Albet\LaravelFilterable\Enums\FilterableType;
+use Albet\LaravelFilterable\Enums\Operators;
+
+protected function filterableColumns(): array {
+    return [
+        'customer_name' => FilterableType::TEXT->limit([Operators::CONTAINS, Operators::NOT_CONTAINS, 
+        Operators::STARTS_WITH, Operators::ENDS_WITH])
+    ];
+}
+```
+
+- `related` <br />
+Allows you to replace the query to use `whereHas` so that the filter apply to relation level. The function receives 2 
+arguments, first is the relationship name, and second is the extra query condition which are optional. Usage Example:
+
+```php
+
+use Albet\LaravelFilterable\Enums\FilterableType;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+
+protected function filterableColumns(): array {
+    return [
+        'flight_license' => FilterableType::NUMBER->related('flight', fn($query) => $query->where('status', 'A'))
+    ];
+}
+
+public function flight(): HasOne {
+    $this->hasOne(Flight::class);
+}
+```
+
+> The modifiers can be chained together: `FilterableType::DATE->related()->limit()` to combine conditions
+
+### Custom Type
+
+> Custom Type does not support modifier.
+
+As mentioned before there are 5 types exist for Filterable, the last one is `custom` which are treated differently. 
+Custom Type is part of static method of `FilterableType` and therefore requires you to define it in `filterableColumns()`
+method.
+
+```php
+use Albet\LaravelFilterable\Enums\FilterableType;
+
+FilterableType::custom();
+```
+
+The custom method accept one argument, `$allowedOperators` that are an array of `Operators`. This argument used to define
+the whitelist of allowed operators for your custom filter.
+
+The custom type requires a handler, both of the handler and the field have to be defined under this convention:
+
+```php
+use Albet\LaravelFilterable\Enums\FilterableType;
+use Albet\LaravelFilterable\Enums\Operators;
+use Albet\LaravelFilterable\Operator;
+use Albet\LaravelFilterable\Traits\Filterable;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
+
+class Flight extends Model {
+    use Filterable;
+    
+    public function filterableColumns(): array{
+        return [
+            'customer_address' => FilterableType::custom([Operators::CONTAINS, Operators::NOT_CONTAINS])
+        ];
+    }
+    
+    public function filterCustomAddress(Builder $builder, string $operator, string $value): void {
+        dump($operator); // 'contains' or 'not_contains' (raw string operator)
+        dump($value); // raw string value
+        $builder->whereHas('customer', fn($query) => $query->where('name', 'LIKE', "%$value%"));
+    }
+}
+```
+
+Notice that the columns are defined in snake case while the method is camel case. Your function should also have three
+arguments defined. First is the `Builder`, a raw `operator`, and finally a raw `value`. The `raw` term means that these
+value are not formatted and they are passed quickly from the query string. However, they are **validated**.
+
+## Using in model
+
+Just call filter scope and you're set:
 
 ```php
 <?php
@@ -132,30 +230,10 @@ The expected value
 
 ## Limitations
 
-Since the `value` currently only supports the `string` type, all other types, including `array` and `number`,
-need to be cast. This can lead to the possibility of inaccurate results. For instance, 
-when casting the number type, Laravel Filterable goes through these steps:
-
-- It checks whether the assigned `field` type is number based on `$rows` or `getRows()`.
-- If this is true, it then checks if the `value` contains a prefix of `.`.
-- If the prefix is present, it casts it as a `float`.
-- If not, it casts it as an `int`.
-
-While the `number` type might be secure due to the definition defined in `$rows` or `getRows()`,
-`array` casting happens automatically. Here's how Filterable handles the casting to `array`:
-
-- It checks if the operator is within `in`, `not_in`, or `have_all`.
-- If this is true, it then checks if the `value` contains a prefix of `,`.
-- If the prefix is present, it splits the `value` based on `,`.
-- If not, it returns an array with the `value` wrapped (`[$value]`).
-
-> Therefore, whenever you use the `in`, `not_in`, or `have_all` operator, you need to ensure that a `,`
-> is not used as a prefix.
-
-The implementation of custom operators or filters is not currently possible at this time.
-
-Lastly, in regard to relationships, while it's not currently possible, I do have plans to add this feature in the future.
-
+The value is limited exclusively to the `string` type, and each casting is performed through types defined in 
+`filterableColumns`. Ambiguous casting may occur for` arrays` with items containing `,` as the value delimiter. 
+Please avoid using `,` in your values, as they are used as the internal array delimiter. Another case could involve 
+`numbers` with more than one `.` delimiter.
 
 ## Testing
 
