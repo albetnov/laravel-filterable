@@ -153,13 +153,14 @@ it('Can handle two dates (not_in)', function () {
     $handler->handleDate();
 });
 
-it('Can handle boolean (0, 1)', function () {
+it('Can handle boolean (0, 1, true, false)', function () {
     /** @var Builder|MockInterface $builder */
     $builder = mock(Builder::class);
     $builder->shouldReceive('where')->with('is_booked', '=', true)->once()
-        ->andReturnSelf();
+        ->andReturnSelf()->times(2);
 
-    $builder->shouldReceive('where')->with('is_booked', '!=', false)->once()->andReturnSelf();
+    $builder->shouldReceive('where')->with('is_booked', '!=', false)->once()->andReturnSelf()
+        ->times(2);
 
     $handler = new Handler(
         builder: $builder,
@@ -175,6 +176,24 @@ it('Can handle boolean (0, 1)', function () {
         column: 'is_booked',
         operator: 'neq',
         value: '0'
+    );
+
+    $handler->handleBoolean();
+
+    $handler = new Handler(
+        builder: $builder,
+        column: 'is_booked',
+        operator: 'eq',
+        value: 'true'
+    );
+
+    $handler->handleBoolean();
+
+    $handler = new Handler(
+        builder: $builder,
+        column: 'is_booked',
+        operator: 'neq',
+        value: 'false'
     );
 
     $handler->handleBoolean();
