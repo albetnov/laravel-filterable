@@ -78,7 +78,7 @@ class Handler
      */
     public function handleBoolean(): void
     {
-        if (! in_array($this->value, ['0', '1'])) {
+        if (!in_array($this->value, ['0', '1', true, false, 'true', 'false'], true)) {
             throw new ValueNotValid($this->value, FilterableType::BOOLEAN);
         }
 
