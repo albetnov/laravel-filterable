@@ -7,6 +7,7 @@ use Albet\LaravelFilterable\Exceptions\ValueNotValid;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
+
 use function in_array;
 
 class Handler
@@ -79,11 +80,11 @@ class Handler
      */
     public function handleBoolean(): void
     {
-        if (!in_array($this->value, ['0', '1', 'true', 'false'], true)) {
+        if (! in_array($this->value, ['0', '1', 'true', 'false'], true)) {
             throw new ValueNotValid($this->value, FilterableType::BOOLEAN);
         }
 
-        if(in_array($this->value, ['1', 'true'], true)) {
+        if (in_array($this->value, ['1', 'true'], true)) {
             $value = true;
         } else {
             $value = false;
