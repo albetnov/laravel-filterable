@@ -2,7 +2,6 @@
 
 namespace Albet\LaravelFilterable\Tests;
 
-use Albet\LaravelFilterable\Operator;
 use Albet\LaravelFilterable\Tests\Stubs\Flight;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
