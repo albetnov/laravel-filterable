@@ -43,8 +43,8 @@ trait Filterable
 
         $request->validate([
             'filters.*.field' => ['required', 'string', Rule::in(collect($this->getFilterable())->keys()->toArray())],
-            'filters.*.operator' => ['required', Rule::in(Operators::toCollection()->toArray())],
-            'filters.*.value' => 'required',
+            'filters.*.opr' => ['required', Rule::in(Operators::toCollection()->toArray())],
+            'filters.*.val' => 'required',
         ]);
 
         $filter = new Filter(

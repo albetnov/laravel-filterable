@@ -14,8 +14,8 @@ class Helpers
             request()->merge([
                 'filters' => [[
                     'field' => $filters,
-                    'operator' => $operators,
-                    'value' => $values,
+                    'opr' => $operators,
+                    'val' => $values,
                 ]],
             ]);
 
@@ -26,8 +26,8 @@ class Helpers
         foreach ($filters as $key => $filter) {
             $allFilters[] = [
                 'field' => $filter,
-                'operator' => $operators[$key],
-                'value' => $values[$key],
+                'opr' => $operators[$key],
+                'val' => $values[$key],
             ];
         }
 

@@ -28,8 +28,8 @@ it('can filter with payload', function () {
     $builder = Helpers::makeBuilder($model);
     $filter = new Filter($builder, $model, [
         [
-            'operator' => 'eq',
-            'value' => '1',
+            'opr' => 'eq',
+            'val' => '1',
             'field' => 'flight_no',
         ],
     ], [
@@ -46,8 +46,8 @@ it('nothing filtered due to filterableColumns is not defined', function () {
         $model,
         [
             [
-                'operator' => 'eq',
-                'value' => '1',
+                'opr' => 'eq',
+                'val' => '1',
                 'field' => 'flight_no',
             ],
         ],
@@ -63,8 +63,8 @@ it('can filter operator using allowedOperators', function () {
         Helpers::makeBuilder($model),
         $model,
         [[
-            'operator' => 'eq',
-            'value' => '1',
+            'opr' => 'eq',
+            'val' => '1',
             'field' => 'flight_no',
         ]],
         [
@@ -78,8 +78,8 @@ it('can filter operator using allowedOperators', function () {
         Helpers::makeBuilder($model),
         $model,
         [[
-            'operator' => 'neq',
-            'value' => '1',
+            'opr' => 'neq',
+            'val' => '1',
             'field' => 'flight_no',
         ]],
         [
@@ -96,8 +96,8 @@ it('can filter relationship columns', function () {
         Helpers::makeBuilder($model),
         $model,
         [[
-            'operator' => 'eq',
-            'value' => 'some name',
+            'opr' => 'eq',
+            'val' => 'some name',
             'field' => 'ticket_name',
         ]],
         [
@@ -117,8 +117,8 @@ it('throws operator not valid', function () {
         Helpers::makeBuilder($model),
         $model,
         [[
-            'operator' => 'gt',
-            'value' => 'testing',
+            'opr' => 'gt',
+            'val' => 'testing',
             'field' => 'flight_no',
         ]],
         [
@@ -135,8 +135,8 @@ it('can add extra condition for relation filter', function () {
         Helpers::makeBuilder($model),
         $model,
         [[
-            'operator' => 'eq',
-            'value' => '120',
+            'opr' => 'eq',
+            'val' => '120',
             'field' => 'ticket_no',
         ]],
         [
@@ -162,8 +162,8 @@ it('can filter custom', function () {
         Helpers::makeBuilder($model),
         $model,
         [[
-            'operator' => 'eq',
-            'value' => 'custom',
+            'opr' => 'eq',
+            'val' => 'custom',
             'field' => 'custom',
         ]],
         [

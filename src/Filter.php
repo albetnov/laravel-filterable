@@ -39,11 +39,11 @@ class Filter
      */
     private function handle(FilterableType $type, array $filter, Builder $builder): void
     {
-        if (! Operator::is($type, $filter['operator'])) {
-            throw new OperatorNotValid($filter['operator'], $type->name);
+        if (! Operator::is($type, $filter['opr'])) {
+            throw new OperatorNotValid($filter['opr'], $type->name);
         }
 
-        $handler = new Handler($builder, $filter['field'], $filter['operator'], $filter['value']);
+        $handler = new Handler($builder, $filter['field'], $filter['opr'], $filter['val']);
 
         match ($type) {
             FilterableType::TEXT => $handler->handleText(),
@@ -62,7 +62,7 @@ class Filter
         /** @phpstan-ignore-next-line */
         if ($typeFactory->getOperators()) {
             /** @phpstan-ignore-next-line */
-            $this->matchCustomOperators($typeFactory->getOperators(), $filter['operator']);
+            $this->matchCustomOperators($typeFactory->getOperators(), $filter['opr']);
         }
 
         /** @phpstan-ignore-next-line */
@@ -100,7 +100,7 @@ class Filter
             if ($type instanceof CustomFactory) {
                 $field = Str::replace('_', ' ', $filter['field']);
                 $method = Str::camel("filter $field");
-                $this->parent->{$method}($this->builder, $filter['operator'], $filter['value']);
+                $this->parent->{$method}($this->builder, $filter['opr'], $filter['val']);
             } elseif ($type instanceof TypeFactory) {
                 $this->handleTypeFactory($type, $filter);
             } else {
